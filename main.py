@@ -1,26 +1,41 @@
 from flask import Flask, request, jsonify
-import joblib
-import numpy as np
-
-# Load the trained model
-model = joblib.load('stock_predictor_model.pkl')
+import requests
+from new_predict import prepare_and_train_model, predict_next_price
 
 app = Flask(__name__)
 
-@app.route('/predict', methods=['GET'])
+API_KEY = 'JW3KVVQ94FV09N81'
+ALPHA_VANTAGE_URL = 'https://www.alphavantage.co/query'
+
+@app.route('/predict', methods=['POST'])
 def predict():
-    latest_close = request.args.get('latest_close')
+    data = request.json
+    symbol = data.get('symbol')
+    
+    if not symbol:
+        return jsonify({'error': 'Symbol is required'}), 400
 
-    if latest_close is None:
-        return jsonify({'error': 'latest_close parameter is missing'}), 400
     try:
-        latest_close = float(latest_close)
-    except ValueError:
-        return jsonify({'error': 'latest_close must be a valid number'}), 400
+        # Fetch data from Alpha Vantage
+        url = f"{ALPHA_VANTAGE_URL}?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=15min&apikey={API_KEY}"
+        response = requests.get(url)
+        stock_data = response.json()
 
-    prediction = model.predict(np.array([[latest_close]]))
+        # Check if the data contains the expected key
+        if 'Time Series (15min)' not in stock_data:
+            return jsonify({'error': 'Time series data not found for the given symbol'}), 404
+        
+        # Train the model and predict the next price
+        last_close, accuracy = prepare_and_train_model(stock_data)
+        next_price = predict_next_price(last_close)
 
-    return jsonify({'predicted_price': prediction[0]})
+        return jsonify({
+            'last_close': last_close,
+            'predicted_next_price': next_price
+        })
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
