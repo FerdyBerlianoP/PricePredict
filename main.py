@@ -16,16 +16,13 @@ def predict():
         return jsonify({'error': 'Symbol is required'}), 400
 
     try:
-        # Fetch data from Alpha Vantage
         url = f"{ALPHA_VANTAGE_URL}?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=15min&apikey={API_KEY}"
         response = requests.get(url)
         stock_data = response.json()
 
-        # Check if the data contains the expected key
         if 'Time Series (15min)' not in stock_data:
             return jsonify({'error': 'Time series data not found for the given symbol'}), 404
         
-        # Train the model and predict the next price
         last_close, accuracy = prepare_and_train_model(stock_data)
         next_price = predict_next_price(last_close)
 
