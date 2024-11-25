@@ -4,7 +4,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 import joblib
 
-API_KEY = 'JW3KVVQ94FV09N81'
+API_KEY = '3T44KJ0WW36CBINK'
 
 symbol = 'MSFT'
 

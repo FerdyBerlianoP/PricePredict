@@ -60,7 +60,7 @@ if __name__ == "__main__":
     try:
         import requests
         
-        API_KEY = 'JW3KVVQ94FV09N81'
+        API_KEY = '3T44KJ0WW36CBINK'
         symbol = 'MSFT'
         url = f'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=15min&apikey={API_KEY}'
         

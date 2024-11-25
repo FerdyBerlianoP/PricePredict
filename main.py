@@ -5,7 +5,7 @@ from new_predict import prepare_and_train_model, predict_next_price
 
 app = Flask(__name__)
 
-API_KEY = 'JW3KVVQ94FV09N81'
+API_KEY = '3T44KJ0WW36CBINK'
 ALPHA_VANTAGE_URL = 'https://www.alphavantage.co/query'
 
 @app.route('/predict', methods=['POST'])
