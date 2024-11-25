@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import requests
+import os
 from new_predict import prepare_and_train_model, predict_next_price
 
 app = Flask(__name__)
@@ -35,4 +36,6 @@ def predict():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
+
